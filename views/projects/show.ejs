@@ -1,0 +1,22 @@
+<%include ../partials/header %>
+
+<div class="container">
+
+
+<h1><%= project.name%></h1>
+
+<img src="<%=project.image %>"/>
+
+<p><%= project.description %></p>
+<p><%= project.project%></p>
+
+<p>
+  <a class="btn" href="/projects/<%= project._id %>/comments/new">Add new comment</a>
+</p>
+<% project.comments.forEach(function(comment){ %>
+  <p>
+      <strong><%= comment.author %> - </strong>  <%= comment.text %>
+  </p>
+<% }) %>
+</div>
+<%include ../partials/footer %>

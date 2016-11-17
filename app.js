@@ -1,9 +1,17 @@
 var express = require("express");
 var app = express();
-var bodyParser = require("body-parser")
-var mongoose = require("mongoose")
+var bodyParser = require("body-parser");
+var mongoose = require("mongoose");
+var VrProject = require("./models/projects");
+var seedDB = require("./seeds");
+var Comment = require("./models/comment");
+
+
+seedDB();
 
 const PORT = 3000;
+
+
 mongoose.connect("mongodb://localhost/vr_projects");
 app.use(bodyParser.urlencoded({
     extended: true
@@ -17,26 +25,6 @@ app.use("/fonts", express.static(__dirname + "/fonts"))
 
 //SCHEMA SETUP
 
-var VrSchema = new mongoose.Schema({
-    name: String,
-    image: String,
-    project: String
-});
-
-var VrProject = mongoose.model("VrProject", VrSchema);
-
-// VrProject.create({
-//     name: "granite hill",
-//     image: "http://az616578.vo.msecnd.net/files/2016/05/13/635987791255837195-1892917331_Camping-Near-The-Lake-Background-Wallpaper.jpg",
-//     description: "This is a huge granite hill, no bathrooms. No water. Beautiful granite."
-// }, function(err, campground) {
-//     if (err) {
-//         console.log(err);
-//     } else {
-//         console.log("NEWLY CREATED CAMPGROUND");
-//         console.log(campground);
-//     }
-// })
 
 app.set("view engine", "ejs");
 
@@ -49,7 +37,7 @@ app.get("/projects", function(req, res) {
         if (err) {
             console.log(err);
         } else {
-            res.render("index", {
+            res.render("projects/index", {
                 projects: projects
             })
         };
@@ -60,10 +48,12 @@ app.post("/projects", function(req, res) {
     var name = req.body.name;
     var image = req.body.image;
     var project = req.body.project;
+    var description = req.body.description;
     var newVrProject = {
         name: name,
         image: image,
-        project: project
+        project: project,
+        description: description
     }
     VrProject.create(newVrProject, function(err, newlyCreated) {
         if (err) {
@@ -75,11 +65,51 @@ app.post("/projects", function(req, res) {
 })
 
 app.get("/projects/new", function(req, res) {
-    res.render("new.ejs")
+    res.render("projects/new.ejs")
 })
 
 app.get("/projects/:id", function(req, res) {
-    res.render("show")
+    VrProject.findById(req.params.id).populate("comments").exec(function(err, foundProject) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log(foundProject);
+            res.render("projects/show", {
+                project: foundProject
+            })
+        }
+    })
+})
+
+app.get("/projects/:id/comments/new", function(req, res) {
+    VrProject.findById(req.params.id, function(err, project) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render("comments/new", {
+                project: project
+            })
+        }
+    })
+})
+
+app.post("/projects/:id/comments", function(req, res) {
+    VrProject.findById(req.params.id, function(err, project) {
+        if (err) {
+            console.log(err);
+            res.redirect("/projects")
+        } else {
+            Comment.create(req.body.comment, function(err, comment) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    project.comments.push(comment);
+                    project.save();
+                    res.redirect("/projects" + projects._id);
+                }
+            })
+        }
+    })
 })
 
 app.get("/login", function(req, res) {
@@ -88,8 +118,6 @@ app.get("/login", function(req, res) {
 
 
 
-
-
 app.listen(PORT, function() {
-    console.log("YelpCamp Server Has Started");
+    console.log("VR HuB Server Has Started");
 });
