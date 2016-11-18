@@ -17,6 +17,9 @@
        </div>
      </div>
 </div>
+<p>
+  <a class="btn right" href="/projects/<%= project._id %>/comments/new">Add new comment</a>
+</p>
 
 <% project.comments.forEach(function(comment){ %>
   <p>
@@ -24,9 +27,7 @@
   </p>
 <% }) %>
 <hr>
-<p>
-  <a class="btn" href="/projects/<%= project._id %>/comments/new">Add new comment</a>
-</p>
+
 
 
 <%include ../partials/footer %>

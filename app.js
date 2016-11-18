@@ -10,7 +10,11 @@ var passport = require("passport");
 var LocalStrategy = require("passport-local");
 var passportLocalMongoose = require("passport-local-mongoose");
 
-seedDB();
+var commentRoutes = require("./routes/comments");
+var projectRoutes = require("./routes/projects");
+var indexRoutes =  require("./routes/index")
+
+// seedDB();
 
 const PORT = 3000;
 
@@ -33,147 +37,26 @@ app.use(require("express-session")({
 app.use(passport.initialize());
 app.use(passport.session());
 
+
+
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+app.use(function(req, res, next) {
+  res.locals.currentUser = req.user;
+  next();
+})
 
 
 app.set("view engine", "ejs");
 
 
-// ==============
-// ROUTES
-// ==============
 
-app.get("/", function(req, res) {
-    res.redirect("projects");
-})
+app.use(indexRoutes);
+app.use(commentRoutes);
+app.use("/projects", projectRoutes);
 
-app.get("/projects", function(req, res) {
-    VrProject.find({}, function(err, projects) {
-        if (err) {
-            console.log(err);
-        } else {
-            res.render("projects/index", {
-                projects: projects
-            })
-        };
-    })
-})
-
-app.post("/projects", function(req, res) {
-    var name = req.body.name;
-    var image = req.body.image;
-    var project = req.body.project;
-    var description = req.body.description;
-    var newVrProject = {
-        name: name,
-        image: image,
-        project: project,
-        description: description
-    }
-    VrProject.create(newVrProject, function(err, newlyCreated) {
-        if (err) {
-            console.log(err);
-        } else {
-            res.redirect("/projects");
-        }
-    })
-})
-
-app.get("/projects/new", isLoggedIn,function(req, res) {
-    res.render("projects/new.ejs")
-})
-
-app.get("/projects/:id", function(req, res) {
-    VrProject.findById(req.params.id).populate("comments").exec(function(err, foundProject) {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log(foundProject);
-            res.render("projects/show", {
-                project: foundProject
-            })
-        }
-    })
-})
-
-app.get("/projects/:id/comments/new", isLoggedIn, function(req, res) {
-    VrProject.findById(req.params.id, function(err, project) {
-        if (err) {
-            console.log(err);
-        } else {
-            res.render("comments/new", {
-                project: project
-            })
-        }
-    })
-})
-
-app.post("/projects/:id/comments", isLoggedIn, function(req, res) {
-    VrProject.findById(req.params.id, function(err, project) {
-        if (err) {
-            console.log(err);
-            res.redirect("/projects")
-        } else {
-            Comment.create(req.body.comment, function(err, comment) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    project.comments.push(comment);
-                    project.save();
-                    res.redirect('/projects/' + project._id);
-                }
-            })
-        }
-    })
-})
-
-app.get("/login", function(req, res) {
-    res.render("projects/login")
-})
-
-app.post("/login", passport.authenticate("local",
-    {
-        successRedirect: "/projects",
-        failureRedirect: "/login"
-    }), function(req, res){
-});
-
-app.get("/register", function(req, res){
-  res.render("projects/register");
-})
-
-app.post("/register", function(req, res){
-    var newUser = new User({username: req.body.username});
-    User.register(newUser, req.body.password, function(err, user){
-        if(err){
-            console.log(err);
-            // req.flash("error", err.message);
-            return res.render("register");
-        }
-        passport.authenticate("local")(req, res, function(){
-          //  req.flash("success", "Successfully Signed Up! Nice to meet you " + req.body.username);
-           res.redirect("/projects");
-        });
-    });
-});
-
-app.get("/logout", function(req, res){
-  req.logout();
-  res.redirect("/projects")
-})
-
-
-function isLoggedIn(req, res, next) {
-  if(req.isAuthenticated()){
-    return next();
-  }
-  else {
-    res.redirect("/login");
-  }
-}
 
 
 app.listen(PORT, function() {
