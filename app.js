@@ -33,7 +33,7 @@ app.use(require("express-session")({
   resave: false,
   saveUninitialized: false
 }));
-
+passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
@@ -133,6 +133,13 @@ app.get("/login", function(req, res) {
     res.render("projects/login")
 })
 
+app.post("/login", passport.authenticate("local", {
+  successRedirect: "./projects",
+  failureRedirect: "./login"
+}) ,function(req, res){
+  console.log("you did it!");
+});
+
 app.get("/register", function(req, res){
   res.render("projects/register");
 })
@@ -141,16 +148,18 @@ app.post("/register", function(req, res) {
     User.register(new User({username: req.body.username}), req.body.password, function(err, user){
       if(err) {
         console.log(err);
-        res.render("register")
-        alert("something wen't wrong!")
+        res.redirect("register")
       } else {
         passport.authenticate("local")(req, res, function(){
-          res.redirect("/projects")
+          res.render("projects/index")
         })
       }
     });
 });
 
+app.get("/logout", function(req, res){
+  console.log("You logged out fool!");
+})
 
 
 app.listen(PORT, function() {
