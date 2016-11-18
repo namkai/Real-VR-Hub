@@ -105,7 +105,7 @@ app.post("/projects/:id/comments", function(req, res) {
                 } else {
                     project.comments.push(comment);
                     project.save();
-                    res.redirect("/projects" + projects._id);
+                    res.redirect('/projects/' + project._id);
                 }
             })
         }
