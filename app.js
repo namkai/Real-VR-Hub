@@ -5,7 +5,10 @@ var mongoose = require("mongoose");
 var VrProject = require("./models/projects");
 var seedDB = require("./seeds");
 var Comment = require("./models/comment");
-
+var User = require("./models/user");
+var passport = require("passport");
+var LocalStrategy = require("passport-local");
+var passportLocalMongoose = require("passport-local-mongoose")
 
 seedDB();
 
@@ -17,16 +20,30 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
+
 app.use("/css", express.static(__dirname + "/css"));
 app.use("/js", express.static(__dirname + "/js"));
 app.use("/fonts", express.static(__dirname + "/fonts"))
+app.use(passport.initialize());
+app.use(passport.session());
 
-// <link rel='stylesheet' href='/style.css' />
 
-//SCHEMA SETUP
+app.use(require("express-session")({
+  secret: "Virtual Reality is the future of technology.",
+  resave: false,
+  saveUninitialized: false
+}));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 
 app.set("view engine", "ejs");
+
+
+// ==============
+// ROUTES
+// ==============
 
 app.get("/", function(req, res) {
     res.redirect("projects");
@@ -113,8 +130,26 @@ app.post("/projects/:id/comments", function(req, res) {
 })
 
 app.get("/login", function(req, res) {
-    res.render("login")
+    res.render("projects/login")
 })
+
+app.get("/register", function(req, res){
+  res.render("projects/register");
+})
+
+app.post("/register", function(req, res) {
+    User.register(new User({username: req.body.username}), req.body.password, function(err, user){
+      if(err) {
+        console.log(err);
+        res.render("register")
+        alert("something wen't wrong!")
+      } else {
+        passport.authenticate("local")(req, res, function(){
+          res.redirect("/projects")
+        })
+      }
+    });
+});
 
 
 

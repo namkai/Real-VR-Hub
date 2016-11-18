@@ -1,4 +1,6 @@
 /* Custom Stylesheet */
+
+
 /**
  * Use this file to override Materialize files so you can update
  * the core Materialize files in the future
@@ -6,63 +8,64 @@
  * Made By MaterializeCSS.com
  */
 
-nav ul a,
-nav .brand-logo {
-  color: #444;
+nav ul a, nav .brand-logo {
+    color: #444;
 }
 
 p {
-  line-height: 2rem;
+    line-height: 2rem;
 }
 
 .button-collapse {
-  color: #26a69a;
+    color: #26a69a;
 }
 
 .parallax-container {
-  min-height: 380px;
-  line-height: 0;
-  height: auto;
-  color: rgba(255,255,255,.9);
+    min-height: 380px;
+    line-height: 0;
+    height: auto;
+    color: rgba(255, 255, 255, .9);
 }
-  .parallax-container .section {
-    width: 100%;
-  }
-  .teal-text.text-lighten-2 {
-      color: #ffffff !important;
-      text-shadow: 0px 4px 3px rgba(0,0,0,0.4),
-				 0px 8px 13px rgba(0,0,0,0.2),
-				 0px 8px 23px rgba(0,0,0,0.2);
-  }
 
-  .teal.lighten-1 {
+.parallax-container .section {
+    width: 100%;
+}
+
+.teal-text.text-lighten-2 {
+    color: #ffffff !important;
+    text-shadow: 0px 4px 3px rgba(0, 0, 0, 0.4), 0px 8px 13px rgba(0, 0, 0, 0.2), 0px 8px 23px rgba(0, 0, 0, 0.2);
+}
+
+.teal.lighten-1 {
     background-color: rgba(49, 108, 132, 0.5) !important;
 }
-@media only screen and (max-width : 992px) {
-  .parallax-container .section {
-    position: absolute;
-    top: 40%;
-  }
-  #index-banner .section {
-    top: 10%;
-  }
+
+@media only screen and (max-width: 992px) {
+    .parallax-container .section {
+        position: absolute;
+        top: 40%;
+    }
+    #index-banner .section {
+        top: 10%;
+    }
 }
 
-@media only screen and (max-width : 600px) {
-  #index-banner .section {
-    top: 0;
-  }
+@media only screen and (max-width: 600px) {
+    #index-banner .section {
+        top: 0;
+    }
 }
 
 .icon-block {
-  padding: 0 15px;
+    padding: 0 15px;
 }
+
 .icon-block .material-icons {
-  font-size: inherit;
+    font-size: inherit;
 }
 
 footer.page-footer {
-  margin: 0;
+    margin: 0;
 }
 
 .card .card-image img {
@@ -85,4 +88,10 @@ footer.page-footer {
     letter-spacing: .5px;
     transition: .2s ease-out;
     cursor: pointer;
+}
+
+#namkai {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
