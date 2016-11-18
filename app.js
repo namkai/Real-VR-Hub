@@ -8,7 +8,7 @@ var Comment = require("./models/comment");
 var User = require("./models/user");
 var passport = require("passport");
 var LocalStrategy = require("passport-local");
-var passportLocalMongoose = require("passport-local-mongoose")
+var passportLocalMongoose = require("passport-local-mongoose");
 
 seedDB();
 
@@ -24,18 +24,19 @@ app.use(bodyParser.urlencoded({
 app.use("/css", express.static(__dirname + "/css"));
 app.use("/js", express.static(__dirname + "/js"));
 app.use("/fonts", express.static(__dirname + "/fonts"))
-app.use(passport.initialize());
-app.use(passport.session());
-
-
+//PASSPORT
 app.use(require("express-session")({
   secret: "Virtual Reality is the future of technology.",
   resave: false,
   saveUninitialized: false
 }));
+app.use(passport.initialize());
+app.use(passport.session());
+
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+
 
 
 app.set("view engine", "ejs");
@@ -81,7 +82,7 @@ app.post("/projects", function(req, res) {
     })
 })
 
-app.get("/projects/new", function(req, res) {
+app.get("/projects/new", isLoggedIn,function(req, res) {
     res.render("projects/new.ejs")
 })
 
@@ -98,7 +99,7 @@ app.get("/projects/:id", function(req, res) {
     })
 })
 
-app.get("/projects/:id/comments/new", function(req, res) {
+app.get("/projects/:id/comments/new", isLoggedIn, function(req, res) {
     VrProject.findById(req.params.id, function(err, project) {
         if (err) {
             console.log(err);
@@ -110,7 +111,7 @@ app.get("/projects/:id/comments/new", function(req, res) {
     })
 })
 
-app.post("/projects/:id/comments", function(req, res) {
+app.post("/projects/:id/comments", isLoggedIn, function(req, res) {
     VrProject.findById(req.params.id, function(err, project) {
         if (err) {
             console.log(err);
@@ -133,33 +134,46 @@ app.get("/login", function(req, res) {
     res.render("projects/login")
 })
 
-app.post("/login", passport.authenticate("local", {
-  successRedirect: "./projects",
-  failureRedirect: "./login"
-}) ,function(req, res){
-  console.log("you did it!");
+app.post("/login", passport.authenticate("local",
+    {
+        successRedirect: "/projects",
+        failureRedirect: "/login"
+    }), function(req, res){
 });
 
 app.get("/register", function(req, res){
   res.render("projects/register");
 })
 
-app.post("/register", function(req, res) {
-    User.register(new User({username: req.body.username}), req.body.password, function(err, user){
-      if(err) {
-        console.log(err);
-        res.redirect("register")
-      } else {
+app.post("/register", function(req, res){
+    var newUser = new User({username: req.body.username});
+    User.register(newUser, req.body.password, function(err, user){
+        if(err){
+            console.log(err);
+            // req.flash("error", err.message);
+            return res.render("register");
+        }
         passport.authenticate("local")(req, res, function(){
-          res.render("projects/index")
-        })
-      }
+          //  req.flash("success", "Successfully Signed Up! Nice to meet you " + req.body.username);
+           res.redirect("/projects");
+        });
     });
 });
 
 app.get("/logout", function(req, res){
-  console.log("You logged out fool!");
+  req.logout();
+  res.redirect("/projects")
 })
+
+
+function isLoggedIn(req, res, next) {
+  if(req.isAuthenticated()){
+    return next();
+  }
+  else {
+    res.redirect("/login");
+  }
+}
 
 
 app.listen(PORT, function() {
