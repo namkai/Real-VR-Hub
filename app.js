@@ -9,10 +9,11 @@ var User = require("./models/user");
 var passport = require("passport");
 var LocalStrategy = require("passport-local");
 var passportLocalMongoose = require("passport-local-mongoose");
-
+var methodOverride = require("method-override");
 var commentRoutes = require("./routes/comments");
 var projectRoutes = require("./routes/projects");
-var indexRoutes =  require("./routes/index")
+var indexRoutes =  require("./routes/index");
+
 
 // seedDB();
 
@@ -36,7 +37,7 @@ app.use(require("express-session")({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-
+app.use(methodOverride("_method"))
 
 
 passport.use(new LocalStrategy(User.authenticate()));

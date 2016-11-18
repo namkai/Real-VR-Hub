@@ -16,7 +16,8 @@ var data = [{
     name: "Equirectangular Images!",
     image: "http://3.bp.blogspot.com/-nKsvHDKHNvY/Usrb398L_CI/AAAAAAAALIU/ssDn6p7sRQc/s1600/bergsjostolen.jpg",
     project: "https://threejs.org/examples/webgl_panorama_equirectangular",
-    description: "See your panoramic images in VR!"
+    description: "See your panoramic images in VR!",
+    author: "Namkai"
 }];
 
 
@@ -26,27 +27,27 @@ function seedDB() {
             console.log(err);
         }
         console.log("removed VR Projects");
-        data.forEach(function(seed) {
-            VrProject.create(seed, function(err, project) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log("added a Project");
-                    Comment.create({
-                        text: "What a cool project!",
-                        author: "Namkai"
-                    }, function(err, comment) {
-                        if (err) {
-                            console.log(err);
-                        } else {
-                            project.comments.push(comment);
-                            project.save();
-                            console.log("new comment");
-                        }
-                    });
-                }
-            })
-        })
+        // data.forEach(function(seed) {
+        //     VrProject.create(seed, function(err, project) {
+        //         if (err) {
+        //             console.log(err);
+        //         } else {
+        //             console.log("added a Project");
+        //             Comment.create({
+        //                 text: "What a cool project!",
+        //                 author: "Namkai"
+        //             }, function(err, comment) {
+        //                 if (err) {
+        //                     console.log(err);
+        //                 } else {
+        //                     project.comments.push(comment);
+        //                     project.save();
+        //                     console.log("new comment");
+        //                 }
+        //             });
+        //         }
+        //     })
+        // })
     });
 }
 

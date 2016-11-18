@@ -10,9 +10,14 @@
          </div>
          <div class="card-content">
           <p><%= project.description %></p>
+          <p><em> Submitted by <%= project.author.username %> </em></p>
          </div>
          <div class="card-action">
            <a class="btn" target="_blank" href="<%= project.project%>">Go to Project</a>
+           <a class="btn green right" href="/projects/<%= project._id%>/edit">Edit</a>
+           <form style="display: inline, margin-right: 5px" class="right red" action="/projects/<%= project._id %>?_method=DELETE" method="POST">
+             <button class="btn btn-xs btn-danger">Delete</button>
+          </form>
          </div>
        </div>
      </div>
