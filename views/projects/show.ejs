@@ -23,7 +23,7 @@
 
 <% project.comments.forEach(function(comment){ %>
   <p>
-      <strong><%= comment.author %> - </strong>  <%= comment.text %>
+      <strong><%= comment.author.username %>: </strong>  <%= comment.text %>
   </p>
 <% }) %>
 <hr>
